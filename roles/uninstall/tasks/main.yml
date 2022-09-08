@@ -1,0 +1,18 @@
+---
+# uninstall
+- name: Recursively remove   installation directory
+  ansible.builtin.file:
+      path: "{{ installation_path }}"
+      state: absent
+  #this task will skip if the "installation_path" receives no value from the calling playbook
+  when: installation_path is defined
+  become: true
+
+- name: edit the path variable
+  lineinfile:
+      path: '~/.profile'
+      line: "export PATH={{ executables_path_for_profile }}:$PATH"
+      state: absent
+  #this task will skip if the "executables_path_for_profile" receives no value from the calling playbook
+  when: executables_path_for_profile is defined
+  notify: configure evironment variable 

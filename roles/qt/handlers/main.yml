@@ -1,0 +1,15 @@
+---
+# handlers file for qt    
+
+
+#refresh the ~/.profile   
+#must be shell ,command does not work
+- name: configure evironment variable 
+  shell: '. ~/.profile'
+
+#installation done, remove the dependency files
+- name: Recursively remove directory when installation done
+  ansible.builtin.file:
+      path: "{{ temp_dir_for_files_in_target_machine }}"
+      state: absent
+

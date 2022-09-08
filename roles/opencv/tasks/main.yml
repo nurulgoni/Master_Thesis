@@ -1,0 +1,57 @@
+---
+# tasks file for opencv
+- name: Create a directory in the  "{{host}}"
+  file:
+    path: "{{ temp_dir_for_files_in_target_machine }}"
+    state: directory
+    mode: '0777' 
+    recurse: yes  
+
+- name: Send the depenecies files to rpi
+  ansible.builtin.copy:
+    src: "{{ dir_path_of_dependency_files_in_control_server }}/opencv/opencv_dep"
+    dest: "{{ temp_dir_for_files_in_target_machine }}"
+    mode: '0777'
+  become: true
+        
+- name: Send the install order of the dependencies
+  ansible.builtin.copy:
+    src: opencv_dep.csv
+    dest: "{{ temp_dir_for_files_in_target_machine }}"
+    mode: '0777'
+    
+- name: Read necessary dependency file name from opencv_dep.csv file
+  read_csv:
+        path: "{{ temp_dir_for_files_in_target_machine }}/opencv_dep.csv"
+        delimiter: ','
+        
+  register: users
+       
+- name: Go to the directory and install .deb files
+  command: dpkg -i {{ item }}
+  #skip empty string in csv list
+  when: item | length > 0
+  become: true
+  with_items: "{{ users.list | map(attribute='opencv') | list }}"
+  args:
+      chdir: "{{ temp_dir_for_files_in_target_machine }}/opencv_dep"
+
+- name: Send the build files to rpi
+  ansible.builtin.copy:
+    src: "{{ dir_path_of_dependency_files_in_control_server }}/opencv/opencv_build.tar.xz"
+    dest: "{{ temp_dir_for_files_in_target_machine }}"
+    mode: '0777'
+    
+- name: opencv_build unzip to /home/pi/for_rpi
+  unarchive:
+      remote_src: yes
+      src: "{{ temp_dir_for_files_in_target_machine }}/opencv_build.tar.xz"
+      dest: "{{ temp_dir_for_files_in_target_machine }}"
+
+- name: Go to the directory and install opencv on /opt/opencv_4.5.5
+  command: make install
+  become: true
+  args:
+      chdir: "{{ temp_dir_for_files_in_target_machine }}/opencv/build2"
+  notify: 
+      - remove {{ temp_dir_for_files_in_target_machine }} directory

@@ -1,0 +1,7 @@
+---
+- hosts: "{{host}}"
+  vars:
+    - temp_dir_for_files_in_target_machine: /home/pi/for_rpi
+    - dir_path_of_dependency_files_in_control_server: /home/ngsharna/for_rpi
+  roles:
+     - python

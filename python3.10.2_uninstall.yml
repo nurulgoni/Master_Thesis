@@ -1,0 +1,32 @@
+---
+- hosts: "{{host}}"
+
+  tasks:
+     - name: Remove file (delete file)
+       ansible.builtin.file:
+           path: /usr/local/bin/{{ item }}
+           state: absent
+       with_items:
+           - 2to3-3.10
+           - idle3.10
+           - pip3.10
+           - pydoc3.10
+           - python3.10
+           - python3.10-config
+       become: true
+
+     - name: Remove file (delete file)
+       ansible.builtin.file:
+          path: /usr/local/lib/libpython3.10.a
+          state: absent
+       become: true
+              
+     - name: Recursively remove   installation directory
+       ansible.builtin.file:
+           path: /usr/local/lib/python3.10
+           state: absent
+       become: true
+       
+       
+
+

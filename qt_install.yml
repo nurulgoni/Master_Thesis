@@ -1,0 +1,16 @@
+---
+- hosts: "{{host}}"
+  vars:
+    - temp_dir_for_files_in_target_machine: /home/pi/for_rpi
+    - dir_path_of_dependency_files_in_control_server: /home/ngsharna/for_rpi
+    #do not change the following installation path. 
+    #It is required to be same  installation path that was used during the build. 
+    #These  both path has to be adjusted.
+    - installation_path: /opt
+    - executables_path_for_profile: /opt/Qt6/bin
+  roles:
+      - qt
+       
+
+
+

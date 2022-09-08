@@ -1,0 +1,35 @@
+---
+# tasks file for qt_creator
+- name: Create a directory in_the  "{{host}}"
+  file:
+    path: "{{ temp_dir_for_files_in_target_machine }}"
+    state: directory
+    mode: '0777' 
+    recurse: yes
+#          
+
+#          
+- name: transfer the qt6_creator setup file to the raspberry pi
+  copy:
+    src: "{{ dir_path_of_dependency_files_in_control_server }}/qtcreator.tar.gz"
+    dest: "{{ temp_dir_for_files_in_target_machine }}"
+    force: no
+
+- name: qt_creator6 unzip to /opt/Qt
+  unarchive:
+      remote_src: yes
+      src: "{{ temp_dir_for_files_in_target_machine }}/qtcreator.tar.gz"
+      dest: /opt
+  become: true
+      #extra_opts:
+#        
+#export environment PATH variable to ~/.profile
+#add a line at end of the file       
+- name: Add path to ~/.profile
+  lineinfile:
+    path: '~/.profile'
+    line: 'export PATH={{ executables_path_for_profile }}:$PATH' 
+  notify: 
+      - configure evironment variable 
+      - remove "{{ temp_dir_for_files_in_target_machine }}"
+

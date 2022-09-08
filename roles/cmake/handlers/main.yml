@@ -1,0 +1,10 @@
+---
+# handlers file for cmake
+- name: configure evironment variable 
+  shell: '. ~/.profile'
+
+- name:  remove {{ temp_dir_for_files_in_target_machine }} directory
+  ansible.builtin.file:
+      path: "{{ temp_dir_for_files_in_target_machine }}"
+      state: absent
+  become: true

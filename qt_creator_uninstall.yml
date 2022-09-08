@@ -1,0 +1,9 @@
+---
+- hosts: "{{host}}"
+  gather_facts: no
+
+  vars:
+    - installation_path: /opt/qtcreator
+    - executables_path_for_profile: /opt/qtcreator/bin
+  roles:
+      - uninstall

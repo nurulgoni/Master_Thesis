@@ -1,0 +1,67 @@
+---
+# tasks file for qt
+- name: Create a directory in_the  "{{host}}"
+  file:
+    path: "{{ temp_dir_for_files_in_target_machine }}/qt_dep"
+    state: directory
+    mode: '0777' 
+    recurse: yes
+    
+- name: transfer the apt setup file to the raspberry pi
+  copy:
+    src: "{{ dir_path_of_dependency_files_in_control_server }}/qt_dep/"
+    dest: "{{ temp_dir_for_files_in_target_machine }}/qt_dep"
+    force: no
+
+
+- name: transfer file list to the raspberry pi
+  copy:
+    src: qt_dep.csv
+    dest: "{{ temp_dir_for_files_in_target_machine }}/qt_dep"
+    force: no #copy if the file does not exist on remote machine
+
+- name: Read necessary dependency file name from qt_dep.csv file
+  read_csv:
+        path: "{{ temp_dir_for_files_in_target_machine }}/qt_dep/qt_dep.csv"
+  register: users
+#       delegate_to: localhost
+
+  
+- name: install dependencies (common)
+  become: yes
+  command: dpkg -i {{ item }}
+  args:
+    chdir: "{{ temp_dir_for_files_in_target_machine }}/qt_dep"
+  with_items: "{{ users.list | map(attribute='qt') | list }}"
+  when: item !="libcupsimage2-dev_2.3.3op2-3+deb11u1_armhf.deb" and item !="libcups2-dev_2.3.3op2-3+deb11u1_armhf.deb"
+  
+- name: install libcupsimage2-dev and libcups2-dev
+  become: yes
+  command: dpkg -i libcups2-dev_2.3.3op2-3+deb11u1_armhf.deb libcupsimage2-dev_2.3.3op2-3+deb11u1_armhf.deb
+  args:
+    chdir: "{{ temp_dir_for_files_in_target_machine }}/qt_dep"
+    
+- name: transfer the qt6 setup file to the raspberry pi
+  copy:
+    src: "{{ dir_path_of_dependency_files_in_control_server }}/Qt6.tar.gz"
+    dest: "{{ temp_dir_for_files_in_target_machine }}"
+    force: no
+    
+
+- name: qt6 unzip to /opt
+  unarchive:
+      remote_src: yes
+      src: "{{ temp_dir_for_files_in_target_machine }}/Qt6.tar.gz"
+      dest: "{{ installation_path }}"
+  become: true
+      #extra_opts:
+
+- name: Add path to ~/.profile
+  lineinfile:
+    path: '~/.profile'
+    line: 'export PATH={{ executables_path_for_profile }}:$PATH' 
+  notify: 
+       - configure evironment variable
+       - Recursively remove directory when installation done
+  
+

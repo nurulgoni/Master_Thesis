@@ -1,0 +1,12 @@
+---
+- hosts: "{{host}}"
+  vars:
+    - temp_dir_for_files_in_target_machine: /home/pi/for_rpi
+    - dir_path_of_dependency_files_in_control_server: /home/ngsharna/for_rpi
+    #do not change the following installation path. 
+    #It is required to be same cmake installation path that was used during the "opencv" build. 
+    #This cmake path has to be same during opencv installation.
+    - installation_path: /usr/local/lib/cmake3.22/cmakes
+    - executables_path_for_profile: /usr/local/lib/cmake3.22/cmake/bin
+  roles:
+      - cmake

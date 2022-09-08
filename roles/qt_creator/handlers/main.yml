@@ -1,0 +1,11 @@
+---
+# handlers file for qt_creator
+#refresh the ~/.profile   
+#must be shell ,command does not workv
+- name: configure evironment variable 
+  shell: '. ~/.profile'
+
+- name:  remove "{{ temp_dir_for_files_in_target_machine }}"
+  ansible.builtin.file:
+      path: "{{ temp_dir_for_files_in_target_machine }}"
+      state: absent

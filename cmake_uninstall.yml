@@ -1,0 +1,18 @@
+---
+- hosts: "{{host}}"
+  gather_facts: no
+
+  vars:
+    - installation_path: /usr/local/lib/cmake3.22
+    - executables_path_for_profile: /usr/local/lib/cmake3.22/cmake/bin
+  roles:
+      - uninstall
+
+           
+
+           
+           
+           
+           
+
+

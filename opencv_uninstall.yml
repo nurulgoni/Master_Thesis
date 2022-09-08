@@ -1,0 +1,10 @@
+---
+- hosts: "{{host}}"
+
+  vars:
+    - installation_path: /opt/opencv_4.5.5
+
+  roles:
+      - uninstall
+
+      

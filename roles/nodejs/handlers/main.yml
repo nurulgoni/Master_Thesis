@@ -1,0 +1,11 @@
+---
+# handlers file for nodejs_install
+#refresh the ~/.profile   
+#must be shell ,command does not work
+- name: configure evironment variable for nodejs 
+  shell: '. ~/.profile'
+
+- name: remove {{ temp_dir_for_files_in_target_machine  }} directory
+  ansible.builtin.file:
+      path: "{{ temp_dir_for_files_in_target_machine  }}"
+      state: absent

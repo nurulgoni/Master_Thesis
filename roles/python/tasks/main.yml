@@ -1,0 +1,73 @@
+---
+# tasks file for python
+
+- name: Create a directory in_the  "{{host}}"
+  file:
+    path: "{{ temp_dir_for_files_in_target_machine }}"
+    state: directory
+    mode: '0777' 
+    recurse: yes
+    
+    
+- name: trasfer python library files to the raspberry pi
+  copy:
+    src: "{{ dir_path_of_dependency_files_in_control_server }}/python3.10.2/usr_local_lib/zipped_version/python3.10.tar.xz"
+    dest: "{{ temp_dir_for_files_in_target_machine }}"
+    force: no
+    
+- name: transfer python library files to the raspberry pi
+  copy:
+    src: "{{ dir_path_of_dependency_files_in_control_server }}/python3.10.2/usr_local_lib/zipped_version/libpython3.10.a.tar.xz"
+    dest: "{{ temp_dir_for_files_in_target_machine }}"
+    force: no
+    
+- name: transfer python executables to the raspberry pi
+  copy:
+    src: "{{ dir_path_of_dependency_files_in_control_server }}/python3.10.2/usr_local_bin/zipped_executables.tar.xz"
+    dest: "{{ temp_dir_for_files_in_target_machine }}"
+    force: no
+    
+- name: python3.10 unzip to /usr/local/lib
+  unarchive:
+      remote_src: yes
+      src: "{{ temp_dir_for_files_in_target_machine }}/python3.10.tar.xz"
+      dest: /usr/local/lib
+  become: true
+
+- name: libpython3.10.a unzip to /usr/local/lib
+  unarchive:
+      remote_src: yes
+      src: "{{ temp_dir_for_files_in_target_machine }}/libpython3.10.a.tar.xz"
+      dest: /usr/local/lib
+  become: true
+    
+- name: python  executables unzip to /usr/local/bin
+  unarchive:
+      remote_src: yes
+      src: "{{ temp_dir_for_files_in_target_machine }}/zipped_executables.tar.xz"
+      dest: /usr/local/bin
+  become: true
+    
+
+
+  
+- name: change permission of python3.10 exucutable file
+  ansible.builtin.file:
+      path: /usr/local/bin/{{ item }}
+      mode: '0777'
+  with_items:
+      - 2to3-3.10
+      - idle3.10
+      - pip3.10
+      - pydoc3.10
+      - python3.10
+      - python3.10-config
+  become: true
+  notify: 
+      - remove {{ temp_dir_for_files_in_target_machine  }} directory
+
+
+  
+
+    
+    

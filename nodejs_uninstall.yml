@@ -1,0 +1,9 @@
+---
+- hosts: "{{host}}"
+
+  vars:
+    - installation_path: /usr/local/lib/nodejs
+    - executables_path_for_profile: /usr/local/lib/nodejs/node-v16.13.0-linux-armv7l/bin
+
+  roles:
+      - uninstall

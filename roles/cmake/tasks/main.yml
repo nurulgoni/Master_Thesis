@@ -1,0 +1,104 @@
+---
+# tasks file for cmake
+- name: Create a directory in the  "{{host}}"
+  file:
+    path: "{{ temp_dir_for_files_in_target_machine }}/cmake"
+    state: directory
+    mode: '0777' 
+    recurse: yes  
+
+- name: transfer the cmake setup file to the raspberry pi
+  copy:
+    src: "{{ dir_path_of_dependency_files_in_control_server }}/cmake/bin/bin.tar.xz"
+    dest: "{{ temp_dir_for_files_in_target_machine }}/cmake"
+    force: no
+- name: transfer the cmake setup file to the raspberry pi
+  copy:
+    src: "{{ dir_path_of_dependency_files_in_control_server }}/cmake/share/share.tar.xz"
+    dest: "{{ temp_dir_for_files_in_target_machine }}/cmake"
+    force: no
+    
+- name: transfer the cmake setup file to the raspberry pi
+  copy:
+    src: "{{ dir_path_of_dependency_files_in_control_server }}/cmake/doc/cmake-3.22.tar.xz"
+    dest: "{{ temp_dir_for_files_in_target_machine }}/cmake"
+    force: no 
+    
+#           
+- name: Create a directory in /usr/local/lib/
+  file:
+    path: "{{ installation_path }}"
+    state: directory
+    mode: '0777' 
+    recurse: yes  #create sub directories automatically
+  become: true
+
+- name: Create a directory(bin) in /usr/local/lib/
+  file:
+    path: "{{ installation_path }}/bin"
+    state: directory
+    mode: '0777' 
+    recurse: yes  #create sub directories automatically
+  become: true
+
+- name: Create a directory(doc) in /usr/local/lib/
+  file:
+    path: "{{ installation_path }}/doc"
+    state: directory
+    mode: '0777' 
+    recurse: yes  #create sub directories automatically
+  become: true
+
+- name: Create a directory in /usr/local/lib/
+  file:
+    path: "{{ installation_path }}/share"
+    state: directory
+    mode: '0777' 
+    recurse: yes  #create sub directories automatically
+  become: true
+- name: cmake unzip 
+  unarchive:
+      remote_src: yes
+      src: "{{ temp_dir_for_files_in_target_machine }}/cmake/bin.tar.xz"
+      dest: "{{ installation_path }}/bin"
+  become: true
+
+- name: cmake unzip 
+  unarchive:
+      remote_src: yes
+      src: "{{ temp_dir_for_files_in_target_machine }}/cmake/share.tar.xz"
+      dest: "{{ installation_path }}/share"
+  become: true
+
+- name: cmake unzip 
+  unarchive:
+      remote_src: yes
+      src: "{{ temp_dir_for_files_in_target_machine }}/cmake/cmake-3.22.tar.xz"
+      dest: "{{ installation_path }}"
+  become: true
+  
+  
+- name: change permission of cmake exucutable file
+  ansible.builtin.file:
+      path: "{{ installation_path }}/bin/{{ item }}"
+      mode: '0777'
+  with_items:
+      - cmake
+  become: true
+  
+
+- name: Add path to ~/.profile
+  lineinfile:
+    path: '~/.profile'
+    line: 'export PATH={{ installation_path }}/bin:$PATH' 
+  notify: 
+      - configure evironment variable 
+      - remove {{ temp_dir_for_files_in_target_machine }} directory
+
+
+   
+           
+           
+
+
+

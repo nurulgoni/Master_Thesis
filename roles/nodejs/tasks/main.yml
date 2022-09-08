@@ -1,0 +1,47 @@
+---
+# tasks file for nodejs_install
+
+- name: Create a directory in the  "{{host}}"
+  file:
+    path: "{{ temp_dir_for_files_in_target_machine }}/nodejs"
+    state: directory
+    mode: '0777' 
+    recurse: yes  
+
+- name: transfer the nodejs setup file to the raspberry pi
+  copy:
+    src: "{{ dir_path_of_dependency_files_in_control_server }}/nodejs/node-v16.13.0-linux-armv7l.tar.xz"
+    dest: "{{ temp_dir_for_files_in_target_machine }}/nodejs"
+    force: no 
+    
+    
+- name: Create a directory in /usr/local/lib/
+  file:
+    path: "{{ installation_path }}"
+    state: directory
+    mode: '0777' 
+    recurse: yes  #create sub directories automatically
+  become: true
+    
+- name: Nodejs unzip to /usr/local/lib/nodejs
+  unarchive:
+      remote_src: yes
+      src: "{{ temp_dir_for_files_in_target_machine }}/nodejs/node-v16.13.0-linux-armv7l.tar.xz"
+      dest: "{{ installation_path }}"
+  become: true
+
+      
+#export environment PATH variable to ~/.profile
+#add a line at end of the file       
+- name: Add path to ~/.profile
+  lineinfile:
+    path: '~/.profile'
+    line: 'export PATH={{ executables_path_for_profile }}:$PATH' 
+  notify: 
+       - configure evironment variable for nodejs
+       - remove {{ temp_dir_for_files_in_target_machine  }} directory
+
+
+      
+      
+

@@ -1,0 +1,7 @@
+---
+# handlers file for uninstall
+
+#refresh the ~/.profile   
+#must be shell ,command does not work
+- name: configure evironment variable 
+  shell: '. ~/.profile'
